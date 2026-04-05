@@ -12,6 +12,7 @@ from .serializers import EmployeeSerializer
 from django.http import Http404
 from rest_framework import mixins
 from rest_framework import generics
+from rest_framework import viewsets
 
 @api_view(['GET', 'POST'])
 def studentsView(request):
@@ -95,6 +96,7 @@ def studentsDetailView(request, pk):
     # RetrieveModelMixin - for GET method to retrieve a single object
     # GenericAPIView - to provide the core functionality for all the mixins
 
+"""
 class Employees(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
@@ -117,6 +119,7 @@ class EmployeesDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins
 
     def delete(self, request, pk):
         return self.destroy(request, pk)
+"""
     
 # Generics
 # ListAPIView - for GET method to list all objects
@@ -127,3 +130,63 @@ class EmployeesDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins
 # ListCreateAPIView - for GET method to list all objects and POST method to create a new object
 # RetrieveUpdateAPIView - for GET method to retrieve a single object and PUT method to update an existing object
 # RetrieveUpdateDestroyAPIView - for GET method to retrieve a single object, PUT method to update
+
+class Employees(generics.ListCreateAPIView):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+
+class EmployeesDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+    lookup_field = 'pk'
+
+# Viewsets
+# ModelViewSet - provides all the CRUD operations (Create, Retrieve, Update, Delete) for a model
+# ViewSet - provides the basic CRUD operations for a model, but does not include the list and create actions by default. You can add them manually if needed.
+
+# class EmployeeViewset(viewsets.ViewSet):
+#     def list(self, request):
+#         employees = Employee.objects.all()
+#         serializer = EmployeeSerializer(employees, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+#     def create(self, request):
+#         serializer = EmployeeSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     def retrieve(self, request, pk=None):
+#         try:
+#             employee = Employee.objects.get(pk=pk)
+#         except Employee.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+#         serializer = EmployeeSerializer(employee)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+#     def update(self, request, pk=None):
+#         try:
+#             employee = Employee.objects.get(pk=pk)
+#         except Employee.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
+
+#         serializer = EmployeeSerializer(employee, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     def destroy(self, request, pk=None):
+#         try:
+#             employee = Employee.objects.get(pk=pk)
+#         except Employee.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
+
+#         employee.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class EmployeeViewset(viewsets.ModelViewSet):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
