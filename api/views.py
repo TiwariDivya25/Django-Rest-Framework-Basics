@@ -15,6 +15,8 @@ from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import viewsets
 from .paginations import CustomPagination
+from .filters import EmployeeFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 @api_view(['GET', 'POST'])
 def studentsView(request):
@@ -193,12 +195,17 @@ class EmployeeViewset(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     pagination_class = CustomPagination
+    #filterset_fields = ['designation']
+    filterset_class = EmployeeFilter
 
 # blogs having nested comments
 
 class BlogView(generics.ListCreateAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['^blog_title', 'blog_body'] # for search filter, '^' means starts with, '=' means exact match, '@' means full text search, '$' means ends with
+    ordering_fields = ['blog_title', 'id'] # for ordering filter
 
 class CommentView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
