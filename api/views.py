@@ -14,6 +14,7 @@ from django.http import Http404
 from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import viewsets
+from .paginations import CustomPagination
 
 @api_view(['GET', 'POST'])
 def studentsView(request):
@@ -191,6 +192,7 @@ class EmployeesDetail(generics.RetrieveUpdateDestroyAPIView):
 class EmployeeViewset(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
+    pagination_class = CustomPagination
 
 # blogs having nested comments
 
